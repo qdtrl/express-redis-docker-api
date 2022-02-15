@@ -10,7 +10,15 @@ services:
       - node-app
 
   node-app:
+    deploy:
+      replicas: 8
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 2
+        delay: 15s
     build: .
+    image: qdt/node-app
     volumes:
       - .:/app
       - /app/node_modules

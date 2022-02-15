@@ -32,27 +32,29 @@ const connectWithRetry = () => {
 
 connectWithRetry();
 
-let redisClient = redis.createClient({ 
-  port: REDIS_PORT,
-  host: REDIS_URL
-});
+// let redisClient = redis.createClient({ 
+//   port: REDIS_PORT,
+//   host: REDIS_URL
+// });
 
-app.enable("trust proxy");
-app.use(session({
-    store: new RedisStore({ client: redisClient }),
-    secret: SESSION_SECRET,
-    saveUninitialized: false,
-    resave: false,
-    cookie: { 
-      httpOnly: true, 
-      secure: false, 
-      maxAge: 30000 
-    }
-}))
+// app.enable("trust proxy");
+// app.use(
+//   session({
+//     store: new RedisStore({ client: redisClient }),
+//     secret: SESSION_SECRET,
+//     saveUninitialized: false,
+//     resave: false,
+//     cookie: { 
+//       httpOnly: true, 
+//       secure: false, 
+//       maxAge: 30000 
+//     }
+// }))
 
 app.use(express.json())
 
 app.get('/api', (req, res) => {
+  console.log('hihi c cool');
   res.send('<h2>Hi you There!</h2>')
 });
 

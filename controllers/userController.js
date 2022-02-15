@@ -6,16 +6,13 @@ exports.signIn = async (req, res, next) => {
   
   try {
     const user = await User.findOne({ username });
-
     if (!user) {
       return res.status(404).json({
         status: 'fail',
         message: 'User not found'
       })
     }
-
-    const correctPassword = bcrypt.compare(password, user.password);
-
+    const correctPassword = await bcrypt.compare(password, user.password);
     if (correctPassword) {
       req.session.user = user;
       res.status(201).json({

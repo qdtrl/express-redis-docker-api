@@ -12,11 +12,6 @@ const {
   REDIS_URL,
   SESSION_SECRET,
   REDIS_PORT } = require('./config/config');
-  
-let redisClient = redis.createClient({
-  host: REDIS_URL,
-  port: REDIS_PORT,
-});
 
 const postRouter = require('./routes/postRoutes')
 const userRouter = require('./routes/userRoutes')
@@ -37,17 +32,21 @@ const connectWithRetry = () => {
 
 connectWithRetry();
 
+let redisClient = redis.createClient({ 
+  port: REDIS_PORT,
+  host: REDIS_URL
+});
+
 app.enable("trust proxy");
-app.use(
-  session({
+app.use(session({
     store: new RedisStore({ client: redisClient }),
     secret: SESSION_SECRET,
-    cookie: {
-      secure: false,
-      resave: false,
-      saveUninitialized: false,
-      httpOnly: true,
-      maxAge: null
+    saveUninitialized: false,
+    resave: false,
+    cookie: { 
+      httpOnly: true, 
+      secure: false, 
+      maxAge: 30000 
     }
 }))
 

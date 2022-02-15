@@ -1,3 +1,4 @@
+const { DEFAULT_EXPIRATION } = require("../config/config");
 const Post = require("../models/postModel");
 
 exports.getPosts = async (req, res, next) => {
@@ -84,4 +85,35 @@ exports.deletePost = async (req, res, next) => {
       status: `fail ${e}`,
     })
   }
+}
+
+exports.getPhotos("/photos", async (req, res) => {
+  const albumId = req.query.albumId;
+  const photos = await getOrSetCache(`photos?albumId=${albumId}`, async () => {
+    const { data } = await axios.get("https://jsonplaceholder.typicode.com/photos",
+    { params: { albumId } })
+    return data
+  })
+  res.json(photos)
+})
+
+exports.getPhotos("/photos/:id", async (req, res) => {
+  const photo = await getOrSetCache(`photos:${req.params.id}`, async () => {
+    const { data } = await axios.get("https://jsonplaceholder.typicode.com/photos",
+    { params: { albumId } })
+    return data
+  })
+  res.json(photo)
+})
+
+const getOrSetCache = (key, callBack) => {
+  return new Promise((resolve, reject) => {
+    redisClient.get(key, async (error, data) => {
+      if(error) return reject(error)
+      if(data) return resolve(JSON.parse(data))
+      const freshData = await callBack()
+      redisClient.setex(key, DEFAULT_EXPIRATION, JSON.stringify(freshData))
+      resolve(freshData)
+    })
+  })
 }
